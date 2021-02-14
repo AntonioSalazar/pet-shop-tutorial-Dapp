@@ -24,9 +24,26 @@ App = {
   },
 
   initWeb3: async function() {
-    /*
-     * Replace me...
-     */
+    if (window.ethereum) {
+      App.web3Provider = window.ethereum;
+      try{
+        // request account access
+        await window.ethereum.enable();
+      } catch (error){
+        //user denied account access...
+        console.error('User denied account access')
+      }
+    }
+
+    //Legacy dapp browsers 
+    else if (window.web3) {
+      App.web3Provider = window.web3.currentProvider;
+    }
+    // if no injected web3 instance is detected, fall back to ganache
+     else {
+       App.web3Provider = new WebAssembly.providers.HttpProvider('http://localhost:7545');
+     }
+     web3 = new web3(App.web3Provider)
 
     return App.initContract();
   },
